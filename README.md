@@ -4,7 +4,7 @@
 1. Create network
 ```docker network create rabbits```
 2. Create instance
-```docker run -d --rm --net rabbits -p 8080:15672 --hostname rabbit-1 --name rabbit-1 rabbitmq:3.8```
+```docker run -d --rm --net rabbits -p 8080:15672 --hostname rabbit-1 --name rabbit-1 rabbitmq:3.10-management```
 
 ## Run instance
 ```docker exec -it rabbit-1 bash```</br>
@@ -12,7 +12,7 @@ Enable management plugin</br>
 ```rabbitmq-plugins enable rabbitmq_management```
 
 ## Build Publisher
-```cd application/publisher ```</br>
+```cd application/publisher```</br>
 ```docker build . -t demopat/rabbitmq-publisher```
 
 ## Run Publisher

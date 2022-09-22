@@ -31,8 +31,22 @@ func consume() {
 		log.Fatalf("%s: %s", "Failed to open a channel", err)
 	}
 
+	err = ch.ExchangeDeclare(
+		"posts",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+
+	if err != nil {
+		log.Fatalf("%s: %s", "Failed to declare an exchange", err)
+	}
+
 	q, err := ch.QueueDeclare(
-		"publisher", // name
+		"task", // name
 		true,   // durable
 		false,   // delete when unused
 		false,   // exclusive
@@ -43,6 +57,19 @@ func consume() {
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to declare a queue", err)
 	}
+
+	err = ch.QueueBind(
+		q.Name, // queue name
+		"",     // routing key
+		"posts", // exchange
+		false,
+		nil,
+	)
+
+	if err != nil {
+		log.Fatalf("%s: %s", "Failed to bind a queue", err)
+	}
+
 
 	fmt.Println("Channel and Queue established")
 

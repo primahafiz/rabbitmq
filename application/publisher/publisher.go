@@ -47,22 +47,24 @@ func submit(writer http.ResponseWriter, request *http.Request, p httprouter.Para
 
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare(
-		"publisher", // name
-		true,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
-	)
+	err = ch.ExchangeDeclare(
+		"posts",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	  )
+
 
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to declare a queue", err)
+		log.Fatalf("%s: %s", "Failed to declare an exchange", err)
 	}
 
 	err = ch.Publish(
-		"",     // exchange
-		q.Name, // routing key
+		"posts",     // exchange
+		"", // routing key
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing {
