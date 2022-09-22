@@ -8,7 +8,7 @@
 
 ## Run instance
 ```docker exec -it rabbit-1 bash```</br>
-Enable management plugin
+Enable management plugin</br>
 ```rabbitmq-plugins enable rabbitmq_management```
 
 ## Build Publisher
