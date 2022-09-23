@@ -19,17 +19,23 @@ func main() {
 
 func consume() {
 
+	// Establish connection ke rabbit host
+
 	conn, err := amqp.Dial("amqp://" + rabbit_user + ":" +rabbit_password + "@" + rabbit_host + ":" + rabbit_port +"/")
 
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to connect to RabbitMQ", err)
 	}
 
+	// Establish channel menuju queue
+
 	ch, err := conn.Channel()
 
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to open a channel", err)
 	}
+
+	// Declare Exchange untuk menyambung koneksi dengan exhange dari publisher
 
 	err = ch.ExchangeDeclare(
 		"posts",   // name
@@ -45,6 +51,8 @@ func consume() {
 		log.Fatalf("%s: %s", "Failed to declare an exchange", err)
 	}
 
+	// Declare queue 
+
 	q, err := ch.QueueDeclare(
 		"task", // name
 		true,   // durable
@@ -57,6 +65,8 @@ func consume() {
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to declare a queue", err)
 	}
+
+	// Untuk bind ke message queue
 
 	err = ch.QueueBind(
 		q.Name, // queue name
@@ -76,6 +86,8 @@ func consume() {
 	defer conn.Close()
 	defer ch.Close()
 
+	// Menangkap message dari queue
+
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
@@ -89,6 +101,8 @@ func consume() {
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to register consumer", err)
 	}
+
+	// Agar message yang ditangkap bisa terus-terusan
 
 	forever := make(chan bool)
 

@@ -31,6 +31,8 @@ func submit(writer http.ResponseWriter, request *http.Request, p httprouter.Para
 	
 	fmt.Println("Received message: " + message)
 
+	// Establish connection ke rabbit host
+
 	conn, err := amqp.Dial("amqp://" + rabbit_user + ":" +rabbit_password + "@" + rabbit_host + ":" + rabbit_port +"/")
 
 	if err != nil {
@@ -47,6 +49,8 @@ func submit(writer http.ResponseWriter, request *http.Request, p httprouter.Para
 
 	defer ch.Close()
 
+	// Declare exchange yang menampung message sementara
+
 	err = ch.ExchangeDeclare(
 		"posts",   // name
 		"fanout", // type
@@ -57,10 +61,11 @@ func submit(writer http.ResponseWriter, request *http.Request, p httprouter.Para
 		nil,      // arguments
 	  )
 
-
 	if err != nil {
 		log.Fatalf("%s: %s", "Failed to declare an exchange", err)
 	}
+
+	// Publish message ke exchange
 
 	err = ch.Publish(
 		"posts",     // exchange
